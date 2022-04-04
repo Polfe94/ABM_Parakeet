@@ -14,13 +14,16 @@ class Lattice():
         self.coords = dict( (n, n) for n in self.G.nodes() )
           '''
 
-
         self.G = np.zeros((width, height), dtype = int)
-        
-        self.leftX = [width] + list(range(width + 1))
-        self.rightX = list(range(width + 1)) + [0]
-        self.bottomY = [height] + list(range(height + 1))
-        self.topY = list(range(height + 1)) + [0]
+        i = np.indices((width, height))
+        x = np.concatenate(i[0]).ravel().tolist()
+        y = np.concatenate(i[1]).ravel().tolist()
+        self.coords = list(zip(x, y))
+
+        # self.leftX = [width] + list(range(width + 1))
+        # self.rightX = list(range(width + 1)) + [0]
+        # self.bottomY = [height] + list(range(height + 1))
+        # self.topY = list(range(height + 1)) + [0]
         
         # eight neighbors from top-left to mid-left
         self.moore = [(-1, 1), (0, 1), (1, 1), (1, 0),
