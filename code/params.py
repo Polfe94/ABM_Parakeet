@@ -1,16 +1,17 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 
 path = os.path.dirname(os.path.dirname(__file__)) + os.sep
-folder = None
 result_path = path + 'results' + os.sep
 file_name = 'test' 
 
-#Model
-n_agents = 100 # 250
-n_steps  = 0 #300000 # 800000
-retrieve_positions = True
+
+""" MODEL PARAMETERS """
+n_agents = 10
+n_steps  = 200
+starting_age = 2
 
 # two options: center, random
 start_node = 'center' # 'random'
@@ -26,8 +27,13 @@ if width % 2 != 0:
 if height % 2 != 0:
     height += 1
 
-kernel = 0 ## change to a distribution of dispersal !
 
+# function with probability as input, jump distance as output
+def kernel(p):
+    hist = list(range(10))
+    x = np.array([i * 1 / len(hist) for i in hist])
+    d = np.argmin(abs(x - p)) # return jump distance
+    return d
 
 # Parameters
 ''' LIFE TABLE '''
@@ -37,18 +43,9 @@ except:
     print('COULD NOT FIND LIFE TABLE. Exiting program...')
     sys.exit(1)
 
+# df['px'][0:8] = [1] * 8
 
-mu = 0.1 # mortality
-rho = 0.5 # reproduction
-gamma = 1 # growth 
-
-'''
-a
-b
-c
-'''
-
-#Number of different runs to average results
+# Number of different runs to average results
 n_runs = 100
 run_parallel = True
 

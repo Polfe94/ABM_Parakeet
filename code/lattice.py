@@ -1,24 +1,27 @@
 # import networkx as nx
 import numpy as np
 
-class Lattice():
-
-    """A model with some number of agents."""
+class Lattice:
 
     def __init__(self, width, height):
 
         # Create squared lattice
-        '''
-
-        self.G = nx.grid_2d_graph(width, height)
-        self.coords = dict( (n, n) for n in self.G.nodes() )
-          '''
-
-        self.G = np.zeros((width, height), dtype = int)
+        self.grid = np.zeros((width, height), dtype = int)
         i = np.indices((width, height))
         x = np.concatenate(i[0]).ravel().tolist()
         y = np.concatenate(i[1]).ravel().tolist()
         self.coords = list(zip(x, y))
+
+
+
+""" OLD CLASS """
+"""
+        '''
+        self.G = nx.grid_2d_graph(width, height)
+        self.coords = dict( (n, n) for n in self.G.nodes() )
+        '''
+
+
 
         # self.leftX = [width] + list(range(width + 1))
         # self.rightX = list(range(width + 1)) + [0]
@@ -52,3 +55,4 @@ class Lattice():
 
     def mating_spots(self, coords):
         pass
+"""

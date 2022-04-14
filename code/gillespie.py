@@ -1,3 +1,7 @@
+
+""" UNUSED !! """
+
+"""
 import numpy as np
 import random
 from agent import *
@@ -56,3 +60,5 @@ class GillespieAlgorithm():
 
 		# get time for next iteration
 		self.time += abs(np.log(self.rng_t)/self.R_t)
+
+"""
