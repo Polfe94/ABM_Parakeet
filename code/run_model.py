@@ -18,10 +18,10 @@ import pandas as pd
 
 from copy import deepcopy
 
-from argparser import argparse
+# from argparser import argparse
 
 # argument parser to change parameters from the command line (or a bash script)
-argparse(sys.argv[1:])
+# argparse(sys.argv[1:])
 
 result_path = params.result_path
 filename = params.file_name

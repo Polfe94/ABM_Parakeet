@@ -44,6 +44,9 @@ except:
     sys.exit(1)
 
 # df['px'][0:8] = [1] * 8
+df['px'] = [1, 0.61, 0.81, 0.81, 0.81, 0.81,
+            0.81, 0.81, 0.81, 0.81, 0.81,
+            0.81, 0.81, 0.81, 0.81, 0]
 
 # Number of different runs to average results
 n_runs = 100

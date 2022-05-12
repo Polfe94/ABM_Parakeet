@@ -24,7 +24,7 @@ class DeterministModel:
 		'n': [len(self.agents)]})
 
 		# visualization gif
-		self.frames = [self.environment.grid]
+		self.frames = [deepcopy(self.environment.grid)]
 
 	def population_metrics(self):
 		pass
@@ -49,7 +49,7 @@ class DeterministModel:
 		c = Counter(pos)
 		df = pd.DataFrame([[x[0], x[1], key, c[x]] for x in c],
 		columns= ['x', 'y', 't', 'n'])
-		self.df = self.df.append(df)
+		self.df = pd.concat([self.df, df], axis = 0)
 		upos = list(set(pos)) # unique positions
 		if len(upos) > 1:
 			maxd = max(abs(np.linalg.norm(np.array(upos) - self.init_pos, axis = 1)))
@@ -62,6 +62,22 @@ class DeterministModel:
 	def save_data(self, path, filename):
 		self.df.to_csv(path + filename + '.csv')
 		self.result.to_csv(path + filename + '.csv')
+  
+	def frames2color(self):
+		
+		n = self.df.iloc[0]['n']
+		relV = 255 / n # pixel value
+		new_frames = []
+
+		for i in range(len(self.frames)):
+			frame = np.repeat(self.frames[i][:, :, np.newaxis], 3, axis = 2)
+			frame = frame * relV
+			new_frames.append(frame)
+   
+		return new_frames
+
+			
+      
 
 	def run(self, steps):
 
@@ -71,7 +87,7 @@ class DeterministModel:
 			d['t'].append(i)
 			d['n'].append(a)
 			d['r'].append(r)
-			self.frames.append(self.environment.grid)
+			self.frames.append(deepcopy(self.environment.grid))
 
 		self.result = pd.DataFrame(d)
 

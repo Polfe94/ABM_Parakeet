@@ -11,6 +11,8 @@ class Lattice:
         x = np.concatenate(i[0]).ravel().tolist()
         y = np.concatenate(i[1]).ravel().tolist()
         self.coords = list(zip(x, y))
+        self.x, self.y = np.meshgrid(np.linspace(width, height, width), np.linspace(width, height, height))
+        
 
 
 

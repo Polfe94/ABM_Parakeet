@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+# from matplotlib.animation import FuncAnimation
 import numpy as np
-from IPython import display
+# from IPython import display
 
 
 """ IDEAS FOR VISUALIZATION """
@@ -11,7 +11,21 @@ from IPython import display
 # the size of the dot is the number of agents in the spot
 
 def gif(model):
+    
+    x, y = model.environment.x, model.environment.y
+    zmin, zmax = -1, max([np.max(model.frames[i]) for i in range(len(model.frames))])
+    
+    for i in range(len(model.frames)):
+        z = model.frames[i]
+        fig, ax = plt.subplots()
+        c = ax.pcolormesh(x, y, z, cmap = 'viridis', vmin = zmin, vmax = zmax)
+        plt.savefig('../results/frame_%s.png' % i)
+    
+    
 
+'''
+def gif(model):
+    
     def update(frame):
 
         plot.set_data(model.frames[frame])
@@ -29,4 +43,6 @@ def gif(model):
 
     return animation
     # plt.close()
+'''
+
     

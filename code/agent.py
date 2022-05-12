@@ -96,7 +96,8 @@ class Parakeet():
 
 	def mate(self, grid):
 		# Note that there is a probability of non-mating at all
-		n = random.randrange(5) # number of individuals // REPLACE
+		n = random.randrange(3) # number of individuals // REPLACE
+		# n = 5
 		grid.grid[self.pos] += n
 		return n
 
