@@ -3,7 +3,7 @@ import numpy as np
 
 class Lattice:
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, scale = 150):
 
         # Create squared lattice
         self.grid = np.zeros((width, height), dtype = int)
@@ -11,7 +11,10 @@ class Lattice:
         x = np.concatenate(i[0]).ravel().tolist()
         y = np.concatenate(i[1]).ravel().tolist()
         self.coords = list(zip(x, y))
-        self.x, self.y = np.meshgrid(np.linspace(width, height, width), np.linspace(width, height, height))
+        self.x, self.y = np.meshgrid(np.linspace(0, height, width), np.linspace(0, height, height))
+        
+        # number of units (meters) per pixel in the grid
+        self.scale = scale 
         
 
 

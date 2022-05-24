@@ -11,7 +11,7 @@ kernel = params.kernel
 
 class Parakeet():
 	
-	def __init__(self, age, pos = None, dispersal = 'jump'):
+	def __init__(self, age, pos = None, coords = (0, 0), dispersal = 'jump'):
 
 		self.age = age
 		
@@ -25,9 +25,9 @@ class Parakeet():
 			x, y = pos
 
 		self.pos = (x, y)
+		self.coords = coords
 		self.probabilities = {'px': params.df['px'][self.age],
-					'mx': params.df['mx'][self.age],
-					'd': random.random()}
+					'mx': params.df['mx'][self.age]}
   
 		# Dispersal movement
 		self.move = self.choose_dispersal_strategy(dispersal)
@@ -47,11 +47,8 @@ class Parakeet():
 
 	def update_probabilities(self):
 		k = list(self.probabilities.keys())
-		k.remove('d')
 		for p in k:
 			self.probabilities[p] = params.df[p][self.age]
-
-		self.probabilities['d'] = random.random() # random jump probability
 
 
 	''' MOVEMENT FUNCTIONS '''
@@ -61,10 +58,12 @@ class Parakeet():
 
 		# dispersion parameters 
 		alpha = 2 * math.pi * random.random() # angle
-		r = kernel(self.probabilities['d']) # distance
+		d = kernel() # distance
+		r = d / grid.scale # distance in meters to pixels in grid
 
 		# new position
 		x, y = r * math.cos(alpha) + self.pos[0], r * math.sin(alpha) + self.pos[1]
+		self.coords = x, y
 		xy = np.array([(x, y)])
 
 		# compute Euclidean distances
@@ -75,6 +74,8 @@ class Parakeet():
 		# update move in the grid
 		grid.grid[prev_pos] -= 1
 		grid.grid[self.pos] += 1
+  
+		# return (d, alpha)
 
 	# def dispersal_jump(self):
 	#     alpha = 2 * math.pi * random.random()
@@ -112,19 +113,25 @@ class Parakeet():
 		if random.random() > self.probabilities['px']:
 			self.die(grid)
 			return False, 0
+			# return False, 0, 0, 0
 
 		if self.age < params.adulthood:
 			newborns = 0
+			# d = 0
+			# alpha = 0
 
 		else:
 			if random.random() <= self.probabilities['mx']:
 				self.move(grid)
+				# d, alpha = self.move(grid)
 				newborns = self.mate(grid)
 
 			else:
 				newborns = 0
+				# d = 0
+				# alpha = 0
 
 		self.grow()
 		self.update_probabilities()
 
-		return True, newborns
+		return True, newborns#, d, alpha
