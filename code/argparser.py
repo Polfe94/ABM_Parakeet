@@ -1,4 +1,5 @@
 import sys, getopt
+import os
 #import re
 #import params
 
@@ -83,7 +84,11 @@ def argparse(argv):
             globals()['params'].file_name = arg
 
         elif opt in ('-d', '--directory'):
-            print('Directory change not implemented yet')
+
+            setattr(globals()['params'], 'result_path', arg)
+            if not os.path.exists(arg):
+                print('Path (%s) does not exist.' % arg)
+                print('Program will try to create a folder in the specified directory')
 
         else:
 
