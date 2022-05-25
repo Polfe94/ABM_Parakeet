@@ -2,7 +2,7 @@ import numpy as np
 from agent import *
 import params
 import pandas as pd
-from collections import Counter
+#from collections import Counter
 from itertools import compress
 from copy import deepcopy
 

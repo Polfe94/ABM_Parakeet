@@ -3,11 +3,13 @@ import math
 import numpy as np
 from copy import deepcopy
 import params
+import functools
 
 '''
 PARAKEET AGENT 
 '''
-kernel = params.kernel
+
+kernel = functools.partial(params.kernel, fit = params.fit)
 
 class Parakeet():
 	
@@ -31,6 +33,7 @@ class Parakeet():
   
 		# Dispersal movement
 		self.move = self.choose_dispersal_strategy(dispersal)
+		self.has_nested = False
 
 
 	# Pick the appropriate dispersal strategy for parakeets
@@ -76,13 +79,6 @@ class Parakeet():
 		grid.grid[self.pos] += 1
   
 		# return (d, alpha)
-
-	# def dispersal_jump(self):
-	#     alpha = 2 * math.pi * random.random()
-	#     r = random.randrange(int(params.width * .2)) ## replace with a dispersal kernel
-	#     r += random.random()
-	#     x, y = r * math.cos(alpha) + self.pos[0], r * math.sin(alpha) + self.pos[1]
-	#     self.pos = (round(x), round(y))
 	
 	def dispersal_moore(self, grid):
 		pass
@@ -97,8 +93,7 @@ class Parakeet():
 
 	def mate(self, grid):
 		# Note that there is a probability of non-mating at all
-		n = random.randrange(3) # number of individuals // REPLACE
-		# n = 5
+		n = np.random.choice(params.lays_p['Values'], p = params.lays_p['Probabilities'])
 		grid.grid[self.pos] += n
 		return n
 
@@ -110,7 +105,7 @@ class Parakeet():
 
 		# returns boolean (is the agent still alive?) and integer (newborn parakeets)
 
-		if random.random() > self.probabilities['px']:
+		if random.random() >= self.probabilities['px']:
 			self.die(grid)
 			return False, 0
 			# return False, 0, 0, 0
@@ -119,17 +114,21 @@ class Parakeet():
 			newborns = 0
 			# d = 0
 			# alpha = 0
+		
+		elif self.age <= params.max_dispersal_age:
+			if not self.has_nested:
+				dispersal = np.random.choice([False, True], p = params.dispersal_prob)
+				if dispersal:
+					# d, alpha = self.move(grid)
+					self.move(grid)
+					self.has_nested = True
+
+			newborns = self.mate(grid)
 
 		else:
-			if random.random() <= self.probabilities['mx']:
-				self.move(grid)
-				# d, alpha = self.move(grid)
-				newborns = self.mate(grid)
-
-			else:
-				newborns = 0
-				# d = 0
-				# alpha = 0
+			newborns = self.mate(grid)
+			# d = 0
+			# alpha = 0
 
 		self.grow()
 		self.update_probabilities()

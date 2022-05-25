@@ -14,56 +14,37 @@ from itertools import compress
 # the color of the dot is the mean age in the spot
 # the size of the dot is the number of agents in the spot
 
-def gif(model, path, delete_frames = True):
+def gif(model, path, filename = 'SIM', delete_frames = True, **kwargs):
     
     if path[-1] != os.sep:
         path += os.sep
     
     x, y = model.environment.x, model.environment.y
-    zmin, zmax = 0, max([np.max(model.frames[i]) for i in range(len(model.frames))])
+    zmin = 0
+    zmax = np.quantile([np.max(model.frames[i]) for i in range(len(model.frames))], q = 0.9)
+    # zmax = max([np.max(model.frames[i]) for i in range(len(model.frames))])
     
     print('Retrieving frames ...')
     for i in range(len(model.frames)):
         z = model.frames[i]
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
-        c = ax.pcolormesh(x, y, z, cmap = 'viridis', vmin = zmin, vmax = zmax)
+        c = ax.pcolormesh(x, y, z, cmap = 'viridis', vmin = zmin, vmax = zmax, shading = 'auto')
         plt.savefig('../results/frame_%s.png' % i, dpi = 200)
         plt.close()
         
     print('Creating gif')
-    writer = imageio.get_writer('%sSIM.gif' % path, mode = 'I')
+    # writer = imageio.get_writer('%sSIM.gif' % path, mode = 'I')
+    imgs = []
     for i in range(len(model.frames)):
         fig = imageio.imread('../results/frame_%s.png' % i)
-        writer.append_data(fig)
+        imgs.append(fig)
+        # writer.append_data(fig)
+    imageio.mimsave(path + filename + '.gif', imgs, **kwargs)
         
+    #writer.close()
     if delete_frames:
         frames = os.listdir('../results/')
         frames = list(compress(frames, ['png' in i for i in frames]))
         for f in frames:
             os.remove('../results/%s' % f)
-        
-    
-'''
-def gif(model):
-    
-    def update(frame):
-
-        plot.set_data(model.frames[frame])
-        return plot
-
-    fig, ax = plt.subplots()
-    plot = ax.matshow(model.frames[0])
-    # plt.colorbar(plot)
-
-    animation = FuncAnimation(fig, update, frames = len(model.frames), interval = 25)
-
-    # video = animation.to_html5_video()
-    # html = display.HTML(video)
-    # display.display(html)
-
-    return animation
-    # plt.close()
-'''
-
-    
