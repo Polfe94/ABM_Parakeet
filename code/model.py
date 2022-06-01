@@ -17,6 +17,8 @@ class DeterministModel:
 			self.init_pos = self.agents[0].pos
 
 		self.environment.grid[self.init_pos] = len(self.agents)
+  
+		self.births = []
 
 		# self.df = pd.DataFrame({'x': [self.agents[0].pos[0]],
 		# 'y': [self.agents[0].pos[1]],
@@ -44,6 +46,8 @@ class DeterministModel:
 			d_idx.append(death)
 			for i in range(newborns):
 				births.append(Parakeet(0, pos = a.pos, coords = a.coords))
+    
+			self.births.append(newborns) ## keep track of number of births
 			
 			pos.append(a.pos)
 			coords.append(a.coords)

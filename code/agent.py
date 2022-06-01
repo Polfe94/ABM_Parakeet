@@ -95,6 +95,7 @@ class Parakeet():
 		# Note that there is a probability of non-mating at all
 		n = np.random.choice(params.lays_p['Values'], p = params.lays_p['Probabilities'])
 		grid.grid[self.pos] += n
+		# number of births should be divided by 2 (number of reproductive units i.e. females)
 		return n
 
 	def grow(self):
