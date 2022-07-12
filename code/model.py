@@ -73,12 +73,14 @@ class DeterministModel:
 
 		
 		if len(coords) > 0:
-			maxd = np.max(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
+			# maxd = np.max(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
+			meand = np.mean(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
 			# maxd = np.quantile(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)), 0.5)
 		else:
-			maxd = 0
+			# maxd = 0
+			meand = 0
    
-		return len(self.agents), maxd
+		return len(self.agents), meand
 
 	def save_data(self, path, filename):
 		# self.df.to_csv(path + filename + '_df.csv')
@@ -88,12 +90,13 @@ class DeterministModel:
 	def run(self, steps):
 
 		# d = {'t': [0], 'n': [len(self.agents)], 'r': [0], 'diff': [0]}
-		d = {'t': [0], 'n': [len(self.agents)], 'r': [0]}
+		d = {'t': [0], 'n': [len(self.agents)], 'r': [0], 'v': [0]}
 		for i in range(steps):
 			a, r = self.step()
 			d['t'].append(i + 1)
 			d['n'].append(a)
 			d['r'].append(r)
+			d['v'].append(math.sqrt(math.pi*(r**2)))
 			# d['diff'].append(abs(d['diff'][-1] - d['r'][-1]))
 			self.frames.append(deepcopy(self.environment.grid))
 

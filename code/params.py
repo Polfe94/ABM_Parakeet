@@ -5,6 +5,7 @@ import pandas as pd
 # from io import StringIO
 # import re
 # import subprocess
+from scipy.optimize import brentq as root
 import math
 import random
 
@@ -15,7 +16,7 @@ file_name = 'test'
 
 """ MODEL PARAMETERS """
 n_agents = 3 # 10 ??
-n_steps  = 10 # 15 # 100 ? 
+n_steps  = 15 # 100 ? 
 starting_age = 1 # ???
 adulthood = 1 # age of becoming an adult
 max_dispersal_age = 3
@@ -80,6 +81,22 @@ def kernel(fit):
         p = C * (beta * math.exp(-L1 * r) + (1 - beta)* math.exp(-L2 * r))
         if y < p:
             return r
+    
+
+def rexpDOUBLE2(N = 1, beta = 0.2, t1 = 5, t2 = 1000, a = 0, b = 1000000, fit = None):
+
+    if fit is not None:
+        beta, t1, t2, b = fit()
+
+    v = []
+    for i in range(N):
+
+        u = random.random()
+        out = root(lambda x: (beta * (math.exp(-x/t1)) + (1-beta) * (math.exp(-x/t2)) - u),
+        a, b, full_output=False)    
+        v.append(out)
+    
+    return v[0]
 
 fit = fit2
 

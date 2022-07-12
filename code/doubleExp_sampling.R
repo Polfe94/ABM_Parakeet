@@ -46,6 +46,22 @@ ddoubleexp <- function(r, beta, L1, L2, rmin, rmax){
      p = C * (beta * exp(-L1 * r) + (1 - beta)*exp(-L2 * r))
 }
 
+rexpDOUBLE2= function(N, beta, t1, t2, a=0, b=100000)
+{
+        f = function(x, beta, t1, t2, u) {
+                temp=beta*(exp(-x/t1))+(1-beta)*(exp(-x/t2))
+                temp - u 
+        }
+        
+        v <- numeric(N)
+        for(i in seq_len(N)){
+                out=uniroot(f, lower=a, upper=b, beta=beta,
+                            t1=t1, t2=t2, u=runif(1), tol=1e-10)
+                v[i]=out$root  
+        }
+        v
+}
+
 ######################################################################
 ################ +++ REJECTION / ACCEPTION METHOD +++ ################
 ######################################################################

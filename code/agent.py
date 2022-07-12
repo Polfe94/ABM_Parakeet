@@ -9,7 +9,9 @@ import functools
 PARAKEET AGENT 
 '''
 
-kernel = functools.partial(params.kernel, fit = params.fit)
+# kernel = functools.partial(params.kernel, fit = params.fit)
+# kernel = functools.partial(params.rexpDOUBLE2, fit = params.fit)
+kernel = params.rexpDOUBLE2
 
 class Parakeet():
 	
