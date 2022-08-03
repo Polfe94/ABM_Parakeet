@@ -19,7 +19,7 @@ n_agents = 3 # 10 ??
 n_steps  = 15 # 100 ? 
 starting_age = 1 # ???
 adulthood = 1 # age of becoming an adult
-max_dispersal_age = 3
+max_dispersal_age = 1 # 3
 
 # two options: center, random
 start_node = 'center' # 'random'

@@ -9,9 +9,9 @@ import functools
 PARAKEET AGENT 
 '''
 
-# kernel = functools.partial(params.kernel, fit = params.fit)
+kernel = functools.partial(params.kernel, fit = params.fit)
 # kernel = functools.partial(params.rexpDOUBLE2, fit = params.fit)
-kernel = params.rexpDOUBLE2
+# kernel = params.rexpDOUBLE2
 
 class Parakeet():
 	
@@ -64,7 +64,7 @@ class Parakeet():
 		# dispersion parameters 
 		alpha = 2 * math.pi * random.random() # angle
 		d = kernel() # distance
-		r = d / grid.scale # distance in meters to pixels in grid
+		r = d # / grid.scale # distance in meters to pixels in grid
 
 		# new position
 		x, y = r * math.cos(alpha) + self.pos[0], r * math.sin(alpha) + self.pos[1]
@@ -95,7 +95,8 @@ class Parakeet():
 
 	def mate(self, grid):
 		# Note that there is a probability of non-mating at all
-		n = np.random.choice(params.lays_p['Values'], p = params.lays_p['Probabilities'])
+		# n = np.random.choice(params.lays_p['Values'], p = params.lays_p['Probabilities'])
+		n = np.random.choice([0, 1, 2], p= [0.1, 0.45, 0.45])
 		grid.grid[self.pos] += n
 		# number of births should be divided by 2 (number of reproductive units i.e. females)
 		return n
