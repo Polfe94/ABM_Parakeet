@@ -73,7 +73,7 @@ def gif_coords(model, path, filename = 'SIM', delete_frames = True, **kwargs):
         plt.close()
         
     print('Creating gif')
-    # writer = imageio.get_writer('%sSIM.gif' % path, mode = 'I')
+    # writer = imageio.get_writer('%sSIM.gif' % path, mode = 'I') 
     imgs = []
     for i in range(len(model.frames)):
         fig = imageio.imread('../results/frame_%s.png' % i)
