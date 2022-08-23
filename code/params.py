@@ -8,6 +8,7 @@ import pandas as pd
 from scipy.optimize import brentq as root
 import math
 import random
+import inspect
 
 path = os.path.dirname(os.path.dirname(__file__)) + os.sep
 result_path = path + 'results' + os.sep
@@ -36,7 +37,16 @@ if height % 2 == 0:
     height += 1
 
 
+
 """ DISPERSAL DISTRIBUTIONS """
+# Fit for trascendental equation
+def fit_trans():
+    beta = 0.000499
+    L1 = 0.000387
+    L2 = 0.009626
+    rmax = 28578
+    return beta, L1, L2, rmax
+
 # Fit without ~59000 outlier
 def fit1():
     beta = 0.0005567593
@@ -61,6 +71,60 @@ def old_fit():
     rmax = 3840
     return beta, L1, L2, rmax
 
+def pdoubleexp_trans(x, beta = 0.000499, lambda1 = 0.000387, lambda2 = 0.009626, xmin = 13, xmax = 28578):
+    
+    u = random.random()
+    
+    temp1= beta*((1+lambda1*xmin)/(lambda1*lambda1))*math.exp(-lambda1*xmin) - beta*((1+lambda1*xmax)/(lambda1*lambda1))*math.exp(-lambda1*xmax)
+    temp2= (1-beta)*((1+lambda2*xmin)/(lambda2*lambda2))*math.exp(-lambda2*xmin) - (1-beta)*((1+lambda2*xmax)/(lambda2*lambda2))*math.exp(-lambda2*xmax)
+    tempX1= beta*((1+lambda1*xmin)/(lambda1*lambda1))*math.exp(-lambda1*xmin) - beta*((1+lambda1*x)/(lambda1*lambda1))*math.exp(-lambda1*x)
+    tempX2= (1-beta)*((1+lambda2*xmin)/(lambda2*lambda2))*math.exp(-lambda2*xmin) - (1-beta)*((1+lambda2*x)/(lambda2*lambda2))*math.exp(-lambda2*x)
+    p=(tempX1+tempX2)/(temp1+temp2)
+    p-u
+
+    return p-u
+
+# double exponential (2D) using trascendental equation
+def r2Dtrans(pdf = pdoubleexp_trans, **kwargs):
+# def r2Dtrans(n, pdf = pdoubleexp_trans, **kwargs):
+    
+    # # min boundary 
+    # if 'a' in kwargs:
+    #     a = kwargs['a']
+    # elif 'xmin' in kwargs:
+    #     a = kwargs['xmin']
+    # elif 'rmin' in kwargs:
+    #     a = kwargs['rmin']
+    # else:
+    #     if 'a' in inspect.signature(pdf).parameters:
+    #         a = inspect.signature(pdf).parameters['a'].default
+    #     elif 'xmin' in inspect.signature(pdf).parameters:
+    #         a = inspect.signature(pdf).parameters['xmin'].default
+            
+    #     else:
+    #         a = 0
+    
+    # # max boundary 
+    # if 'b' in kwargs:
+    #         b = kwargs['b']
+    # elif 'xmax' in kwargs:
+    #     b = kwargs['xmax']
+    # elif 'rmax' in kwargs:
+    #     b = kwargs['rmax']
+    # else:
+    #     if 'b' in inspect.signature(pdf).parameters:
+    #         b = inspect.signature(pdf).parameters['b'].default
+    #     elif 'xmax' in inspect.signature(pdf).parameters:
+    #         b = inspect.signature(pdf).parameters['xmax'].default
+            
+    #     else:
+    #         b = math.inf
+            
+    out = root(pdf, a = 13, b = 28578, full_output=False, xtol = 1e-15)
+    # out = root(pdf, a = a, b = b, args = kwargs, full_output=False)
+    
+    return out
+    
 # double exponential (2D)
 def kernel(fit):
     M = 0.000005590063 # function maximum
@@ -81,6 +145,8 @@ def kernel(fit):
         p = C * (beta * math.exp(-L1 * r) + (1 - beta)* math.exp(-L2 * r))
         if y < p:
             return r
+    
+
     
 
 def rexpDOUBLE2(N = 1, beta = 0.2, t1 = 5, t2 = 1000, a = 0, b = 1000000, fit = None):

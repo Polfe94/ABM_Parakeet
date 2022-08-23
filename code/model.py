@@ -1,3 +1,4 @@
+from genericpath import exists
 import numpy as np
 from agent import *
 import params
@@ -8,15 +9,17 @@ from copy import deepcopy
 
 class DeterministModel:
 
-	def __init__(self, agents, environment, init_pos = None):
+	def __init__(self, agents, environment):
+	# def __init__(self, agents, environment, init_pos = None):
 
 		self.agents = agents
 		self.environment = environment
-		self.life_table = params.df
-		if init_pos is None:
-			self.init_pos = self.agents[0].pos
+		# self.life_table = params.df
+		# if init_pos is None:
+		# 	self.init_pos = self.agents[0].pos
 
-		self.environment.grid[self.init_pos] = len(self.agents)
+	
+		# self.environment.grid[self.init_pos] = len(self.agents)
   
 		self.births = []
 
@@ -26,7 +29,8 @@ class DeterministModel:
 		# 'n': [len(self.agents)]})
 
 		# visualization gif
-		self.frames = [deepcopy(self.environment.grid)]
+		# self.frames = [deepcopy(self.environment.grid)]
+		self.frames = [deepcopy(self.environment.coords)]
 		self.dispersion = []
 
 	def population_metrics(self):
@@ -45,17 +49,20 @@ class DeterministModel:
 			death, newborns = a.action(self.environment)
 			d_idx.append(death)
 			for i in range(newborns):
-				births.append(Parakeet(0, pos = a.pos, coords = a.coords))
+				births.append(Parakeet(0, pos = a.pos))
+				
+ 				# births.append(Parakeet(0, pos = a.pos, coords = a.coords))
+
     
 			self.births.append(newborns) ## keep track of number of births
-			
-			pos.append(a.pos)
-			coords.append(a.coords)
+			if a.has_nested:
+				pos.append(a.pos)
+			# coords.append(a.coords)
 			# moves.append(d)
    
 		# self.dispersion.append(moves)
 		self.agents = list(compress(self.agents, d_idx))
-		coords = list(compress(coords, d_idx))
+		# coords = list(compress(coords, d_idx))
 		# coords = list(compress(coords, [i != (0,0) for i in coords]))
 		self.dispersion.append(coords)
 
@@ -71,14 +78,18 @@ class DeterministModel:
 		# else:
 		# 	maxd = 0.0
 
-		
-		if len(coords) > 0:
-			# maxd = np.max(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
-			meand = np.mean(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
-			# maxd = np.quantile(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)), 0.5)
+		if len(pos) > 0:
+			meand = np.mean(abs(np.linalg.norm(np.array(pos) - (0, 0), axis = 1)))
 		else:
-			# maxd = 0
 			meand = 0
+		
+		# if len(coords) > 0:
+		# 	# maxd = np.max(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
+		# 	meand = np.mean(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)))
+		# 	# maxd = np.quantile(abs(np.linalg.norm(np.array(coords) - (0, 0), axis = 1)), 0.5)
+		# else:
+		# 	# maxd = 0
+		# 	meand = 0
    
 		return len(self.agents), meand
 
@@ -86,6 +97,11 @@ class DeterministModel:
 		# self.df.to_csv(path + filename + '_df.csv')
 		self.result.to_csv(path + filename + '_result.csv')
 		# self.dispersion.to_csv(path + filename + '_dispersion.csv')
+  
+	def compute_velocity(self):
+		x, y = self.result['t'][1:], self.result['v'][1:]
+		lm = np.polyfit(x, y, 1)
+		return lm[0]
 
 	def run(self, steps):
 
@@ -98,7 +114,8 @@ class DeterministModel:
 			d['r'].append(r)
 			d['v'].append(math.sqrt(math.pi*(r**2)))
 			# d['diff'].append(abs(d['diff'][-1] - d['r'][-1]))
-			self.frames.append(deepcopy(self.environment.grid))
+			# self.frames.append(deepcopy(self.environment.grid))
+			self.frames.append(deepcopy(self.environment.coords))
 
 		self.result = pd.DataFrame(d)
 		# self.dispersion = pd.DataFrame(self.dispersion)

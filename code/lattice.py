@@ -16,8 +16,19 @@ class Lattice:
         # number of units (meters) per pixel in the grid
         self.scale = scale 
         
-
-
+class Continuum:
+    
+    def __init__(self, coord_list):
+        
+        
+        self.coords = {}
+        for xy in coord_list:
+            if xy in self.coords:
+                self.coords[xy] += 1
+            else:
+                self.coords[xy] = 1
+                
+    
 
 """ OLD CLASS """
 """
