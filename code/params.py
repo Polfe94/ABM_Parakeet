@@ -1,76 +1,18 @@
 import os
-# import sys
 import pandas as pd
-# import numpy as np
-# from io import StringIO
-# import re
-# import subprocess
 from scipy.optimize import brentq as root
 import math
 import random
-import inspect
 
 path = os.path.dirname(os.path.dirname(__file__)) + os.sep
 result_path = path + 'results' + os.sep
 file_name = 'test' 
 
-
-""" MODEL PARAMETERS """
-n_agents = 3 # 10 ??
-n_steps  = 15 # 100 ? 
-starting_age = 1 # ???
-adulthood = 1 # age of becoming an adult
-max_dispersal_age = 1 # 3
-
-# two options: center, random
-start_node = 'center' # 'random'
+adulthood = 1 # age of sexual maturity
+max_dispersal_age = 1 # maximum age of dispersal
 
 
-# Lattice size (should have odd coordinates)
-width    = 101  
-height   = 101
-
-if width % 2 == 0:
-    width += 1
-
-if height % 2 == 0:
-    height += 1
-
-
-
-""" DISPERSAL DISTRIBUTIONS """
-# Fit for trascendental equation
-def fit_trans():
-    beta = 0.000499
-    L1 = 0.000387
-    L2 = 0.009626
-    rmax = 28578
-    return beta, L1, L2, rmax
-
-# Fit without ~59000 outlier
-def fit1():
-    beta = 0.0005567593
-    L1 = 0.0003858284
-    L2 = 0.0090770018
-    rmax = 28578
-    return beta, L1, L2, rmax
-
-# Fit without ~59000 and ~28000 outliers
-def fit2():
-    beta = 0.0009293295
-    L1 = 0.0005018196      
-    L2 = 0.0091381715
-    rmax = 10508
-    return beta, L1, L2, rmax
-
-# OLD fit
-def old_fit():
-    beta = 0.00071277
-    L1 = 0.00050245     
-    L2 = 0.00909844
-    rmax = 3840
-    return beta, L1, L2, rmax
-
+""" DISPERSAL DISTRIBUTION """
 def pdoubleexp_trans(x, beta = 0.000499, lambda1 = 0.000387, lambda2 = 0.009626, xmin = 13, xmax = 28578):
     
     u = random.random()
@@ -85,98 +27,11 @@ def pdoubleexp_trans(x, beta = 0.000499, lambda1 = 0.000387, lambda2 = 0.009626,
     return p-u
 
 # double exponential (2D) using trascendental equation
-def r2Dtrans(pdf = pdoubleexp_trans, **kwargs):
-# def r2Dtrans(n, pdf = pdoubleexp_trans, **kwargs):
-    
-    # # min boundary 
-    # if 'a' in kwargs:
-    #     a = kwargs['a']
-    # elif 'xmin' in kwargs:
-    #     a = kwargs['xmin']
-    # elif 'rmin' in kwargs:
-    #     a = kwargs['rmin']
-    # else:
-    #     if 'a' in inspect.signature(pdf).parameters:
-    #         a = inspect.signature(pdf).parameters['a'].default
-    #     elif 'xmin' in inspect.signature(pdf).parameters:
-    #         a = inspect.signature(pdf).parameters['xmin'].default
-            
-    #     else:
-    #         a = 0
-    
-    # # max boundary 
-    # if 'b' in kwargs:
-    #         b = kwargs['b']
-    # elif 'xmax' in kwargs:
-    #     b = kwargs['xmax']
-    # elif 'rmax' in kwargs:
-    #     b = kwargs['rmax']
-    # else:
-    #     if 'b' in inspect.signature(pdf).parameters:
-    #         b = inspect.signature(pdf).parameters['b'].default
-    #     elif 'xmax' in inspect.signature(pdf).parameters:
-    #         b = inspect.signature(pdf).parameters['xmax'].default
-            
-    #     else:
-    #         b = math.inf
-            
+def r2Dtrans(pdf = pdoubleexp_trans):
+       
     out = root(pdf, a = 13, b = 28578, full_output=False, xtol = 1e-15)
-    # out = root(pdf, a = a, b = b, args = kwargs, full_output=False)
     
     return out
-    
-# double exponential (2D)
-def kernel(fit):
-    M = 0.000005590063 # function maximum
-    beta, L1, L2, rmax = fit()
-
-    rmin = 1
-
-    d1 = beta * ((1 + L1 * rmin)/ L1 **2) * math.exp(-L1 * rmin)
-    d2 = (1- beta) * ((1 + L2 * rmin) / L2 ** 2) * math.exp(-L2 * rmin)
-    d3 = -beta *((1 + L1 * rmax) / L1 ** 2) * math.exp(-L1 * rmax)
-    d4 = -(1- beta)* ((1+L2 * rmax) / L2 ** 2) * math.exp(-L2 * rmax)
-     
-    C = (1 / (2 * math.pi)) * (1 / (d1 + d2 + d3 + d4))
-    
-    while True:
-        r = random.uniform(rmin, rmax)
-        y = random.uniform(0, M)
-        p = C * (beta * math.exp(-L1 * r) + (1 - beta)* math.exp(-L2 * r))
-        if y < p:
-            return r
-    
-
-    
-
-def rexpDOUBLE2(N = 1, beta = 0.2, t1 = 5, t2 = 1000, a = 0, b = 1000000, fit = None):
-
-    if fit is not None:
-        beta, t1, t2, b = fit()
-
-    v = []
-    for i in range(N):
-
-        u = random.random()
-        out = root(lambda x: (beta * (math.exp(-x/t1)) + (1-beta) * (math.exp(-x/t2)) - u),
-        a, b, full_output=False)    
-        v.append(out)
-    
-    return v[0]
-
-fit = fit2
-
-# try:
-#     p = subprocess.Popen('/usr/bin/Rscript --vanilla %sdoubleExp_sampling.R', shell = True, stdout = subprocess.PIPE)
-#     p = str(p.stdout.read(), 'utf-8')
-#     p = StringIO(p)
-#     p = str(pd.read_csv(p))
-#     p = re.sub(r'\[.*?\]', '', p)
-#     p = p.split('')
-#     p.remove('')
-
-# except:
-#     print('Something went wrong during kernel importation. Using default sampling distribution')
 
 """ PARAKEET ACTION'S PROBABILITIES """
 try:
@@ -209,10 +64,6 @@ try:
 except:
     print('COULD NOT FIND DISPERSAL DISTANCES. Switching to default values...')
     dispersal_prob = [0.3, 0.7]
-
-# Number of different runs to average results
-n_runs = 1000
-run_parallel = True
 
 
 
