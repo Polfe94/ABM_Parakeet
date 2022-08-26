@@ -8,8 +8,6 @@ import params
 PARAKEET AGENT 
 '''
 
-kernel = params.r2Dtrans
-
 class Parakeet():
 	
 
@@ -32,7 +30,7 @@ class Parakeet():
 
 
 	''' MOVEMENT FUNCTIONS '''
-	def dispersal_jump(self, grid):
+	def dispersal_jump(self, grid, kernel):
 		prev_pos = self.pos
 
 		# dispersion parameters 
@@ -66,7 +64,7 @@ class Parakeet():
 		self.age += 1
 
 	''' ACTION CHOICE '''
-	def action(self, grid):
+	def action(self, grid, kernel):
 
 		# returns boolean (is the agent still alive?) and integer (newborn parakeets)
 
@@ -84,7 +82,7 @@ class Parakeet():
 				dispersal = np.random.choice([False, True], p = params.dispersal_prob)
 				if dispersal:
 					# d, alpha = self.move(grid)
-					self.move(grid)
+					self.move(grid, kernel)
 					self.has_nested = True
 
 			newborns = self.mate(grid)

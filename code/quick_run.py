@@ -4,10 +4,22 @@ from lattice import Continuum
 import functools
 
 
-kernel = params.r2Dtrans
-kernel = functools.partial(kernel, beta = 0.000499, lambda1 = 0.000387, lambda2 = 0.009626, xmin = 13, xmax = 28578)
+pdf = functools.partial(params.pdoubleexp_trans, beta = 0.000499, lambda1 = 0.000387, lambda2 = 0.009626, xmin = 13, xmax = 28578)
+kernel = functools.partial(params.r2Dtrans, pdf = pdf)
 
-def quick_run(runs, model_iters = 25, n_agents = 3):
+def pdf_args(pdf = params.pdoubleexp_trans, **kwargs):
+    pdf = functools.partial(pdf, **kwargs)
+    kernel = functools.partial(params.r2Dtrans, pdf = pdf)
+    return kernel
+
+def change_survival(value, age = 1):
+    if age == 1:
+        params['px'][age] = value
+        
+    else:
+        params['px'][2:] = value
+        
+def quick_run(runs, kernel = kernel, model_iters = 25, n_agents = 3):
     
     result = []
     r = []
@@ -17,6 +29,7 @@ def quick_run(runs, model_iters = 25, n_agents = 3):
         env = Continuum([(0,0) for i in range(n_agents)])
 
         m = DeterministModel(agents, env)
+        m.kernel = kernel
         m.run(model_iters)
         
         if 0 in list(m.result['n']):

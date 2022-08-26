@@ -6,11 +6,12 @@ from copy import deepcopy
 
 class DeterministModel:
 
-	def __init__(self, agents, environment):
+	def __init__(self, agents, environment, kernel = params.r2Dtrans):
 
 		self.agents = agents
 		self.environment = environment
 		self.births = []
+		self.kernel = kernel
 
 		self.frames = [deepcopy(self.environment.coords)]
 		self.dispersion = []
@@ -27,7 +28,7 @@ class DeterministModel:
 
 		for a in self.agents:
 
-			death, newborns = a.action(self.environment)
+			death, newborns = a.action(self.environment, self.kernel)
 			d_idx.append(death)
 			for i in range(newborns):
 				births.append(Parakeet(0, pos = a.pos))
