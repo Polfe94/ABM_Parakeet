@@ -19,11 +19,12 @@ def change_survival(value, age = 1):
     else:
         params['px'][2:] = value
         
-def quick_run(runs, kernel = kernel, model_iters = 25, n_agents = 3):
+def quick_run(runs, kernel = kernel, model_iters = 15, n_agents = 3):
     
-    result = []
-    r = []
-    while len(result) < runs:
+    velocities = []
+    distances = []
+    results = []
+    while len(velocities) < runs:
 
         agents = [Parakeet(1) for i in range(n_agents)]
         env = Continuum([(0,0) for i in range(n_agents)])
@@ -35,12 +36,13 @@ def quick_run(runs, kernel = kernel, model_iters = 25, n_agents = 3):
         if 0 in list(m.result['n']):
             continue
 
-        result.append(m.compute_velocity())
-        r.append(list(m.result['r'][1:]))
-        print('Iteration: %03d' % len(result), end = '\r')
+        velocities.append(m.compute_velocity())
+        results.append(m.result)
+        distances.append(list(m.result['r']))
+        print('Iteration: %03d' % len(velocities), end = '\r')
         
-    df = pd.DataFrame({'t': list(range(1, model_iters + 1)),
-                       'r': np.mean(np.array(r), axis = 0),
-                       'sd': np.std(np.array(r), axis = 0)})
+    df = pd.DataFrame({'t': list(range(model_iters + 1)),
+                       'r': np.mean(np.array(distances), axis = 0),
+                       'sd': np.std(np.array(distances), axis = 0)})
         
-    return result, df
+    return velocities, results, df

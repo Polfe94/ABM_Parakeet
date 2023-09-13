@@ -99,3 +99,27 @@ def plot_model(model, **kwargs):
         
     plt.colorbar(label = 'N')
     plt.show()
+
+def plot_distance(runs):
+    l = len(runs)
+    lresult = []
+    for i in range(l):
+        lresult.append(runs[i]['r'])
+        plt.plot(runs[i]['t'], runs[i]['r'] /1000, c = 'grey')
+
+    plt.plot(runs[0]['t'], np.mean(np.array(lresult), axis = 0) /1000, c = 'blue')
+    plt.xlabel('Time (years)')
+    plt.ylabel('Distance (km)')
+    plt.show()
+
+def plot_nests(runs):
+    l = len(runs)
+    lresult = []
+    for i in range(l):
+        lresult.append(runs[i]['n'])
+        plt.plot(runs[i]['t'], runs[i]['n'], c = 'grey')
+
+    plt.plot(runs[0]['t'], np.mean(np.array(lresult), axis = 0), c = 'blue')
+    plt.xlabel('Time (years)')
+    plt.ylabel('Number of nests')
+    plt.show()
